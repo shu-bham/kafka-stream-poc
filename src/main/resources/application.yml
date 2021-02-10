@@ -1,0 +1,59 @@
+server:
+  servlet:
+    context-path: /test
+  port: 8092
+
+## Enable CORS for Actuator Endpoints
+#management:
+#  endpoints:
+#    web:
+#      cors:
+#        allowed-origins: "*"
+#        allowed-methods: OPTIONS, GET
+#        allowed-headers: "*"
+#      exposure:
+#        include: health,prometheus,beans
+
+spring:
+  application:
+    name:
+#  zipkin:
+#    baseUrl:${ZIPKIN_BASE_URL}
+#  jmx:
+#    enabled: true
+  profiles:
+    active: ${ENVIRONMENT_NAME:local}
+
+  cloud:
+    stream:
+      # using function binding https://cloud.spring.io/spring-cloud-static/spring-cloud-stream/current/reference/html/spring-cloud-stream.html#_functional_binding_names
+      function: process
+      bindings:
+        process-in-0:
+          destination: ${INPUT_TOPIC:input-topic}
+          consumer:
+            max-attempts: 1
+        process-out-0:
+          destination: ${OUTPUT_TOPIC:output-topic}
+      kafka:
+        streams:
+          binder:
+            application-id: demo-app-id
+            configuration:
+              processing.guarantee: exactly_once
+              commit.interval.ms: 1000
+#              security.protocol: SSL
+#              ssl:
+#                truststore.location: ${TRUSTSTORE_LOCATION}
+#                keystore.location: ${KEYSTORE_LOCATION}
+#                keystore.password: ${KEYSTORE_PASSWORD}
+#                truststore.password: ${TRUSTSTORE_PASSWORD}
+#                truststore.type: JKS
+#                keystore.type: JKS
+              default:
+                key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+            auto-create-topics: false
+        binder:
+          brokers: ${BROKERS:localhost:9092}
+
