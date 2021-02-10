@@ -3,27 +3,9 @@ server:
     context-path: /test
   port: 8092
 
-## Enable CORS for Actuator Endpoints
-#management:
-#  endpoints:
-#    web:
-#      cors:
-#        allowed-origins: "*"
-#        allowed-methods: OPTIONS, GET
-#        allowed-headers: "*"
-#      exposure:
-#        include: health,prometheus,beans
-
 spring:
-  application:
-    name:
-#  zipkin:
-#    baseUrl:${ZIPKIN_BASE_URL}
-#  jmx:
-#    enabled: true
   profiles:
     active: ${ENVIRONMENT_NAME:local}
-
   cloud:
     stream:
       # using function binding https://cloud.spring.io/spring-cloud-static/spring-cloud-stream/current/reference/html/spring-cloud-stream.html#_functional_binding_names
@@ -56,4 +38,10 @@ spring:
             auto-create-topics: false
         binder:
           brokers: ${BROKERS:localhost:9092}
+client:
+  config:
+    connect-timeout: 3000
+    receive-timeout: 8000
+    base-url: ${SERVICE_BASE_URL:'http://localhost:9090'}
+    cacerts-path: ${CACERTS_PATH:deploy/cacerts}
 

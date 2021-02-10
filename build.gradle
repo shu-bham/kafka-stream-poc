@@ -29,6 +29,8 @@ dependencies {
 	testCompileOnly group: 'org.projectlombok', name: 'lombok', version: "${LOMBOK_VERSION}"
 	testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: "${LOMBOK_VERSION}"
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: "${LOMBOK_VERSION}"
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testImplementation 'io.projectreactor:reactor-test'
 }
 
 dependencyManagement {

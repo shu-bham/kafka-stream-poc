@@ -1,5 +1,6 @@
-package com.example.kafka.streams.poc;
+package com.example.kafka.streams.poc.service;
 
+import com.example.kafka.streams.poc.client.ServiceClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
@@ -23,8 +24,11 @@ import java.util.Map;
 public class MyTransformer implements Transformer<String, String, KeyValue<String, String>> {
 
   private ProcessorContext processorContext;
+  private ServiceClient serviceClient;
 
-  public MyTransformer() {}
+  public MyTransformer(ServiceClient serviceClient) {
+    this.serviceClient = serviceClient;
+  }
 
   @Override
   public void init(ProcessorContext processorContext) {
@@ -66,7 +70,10 @@ public class MyTransformer implements Transformer<String, String, KeyValue<Strin
       // ex: setting header "name" in the claim
       processorContext.headers().add("name", value.getBytes(StandardCharsets.UTF_8));
 
-      String updatedVal = value.toUpperCase();
+      String updatedVal = "default";
+      if (serviceClient.isValidUser(key, value).block()) {
+        updatedVal = value.toUpperCase();
+      }
       // commit the offset and forward the message
       return new KeyValue<>(key, updatedVal);
     }

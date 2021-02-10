@@ -1,5 +1,7 @@
-package com.example.kafka.streams.poc;
+package com.example.kafka.streams.poc.config;
 
+import com.example.kafka.streams.poc.client.ServiceClient;
+import com.example.kafka.streams.poc.service.MyTransformer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +13,16 @@ import java.util.function.Function;
 @Slf4j
 @Configuration
 public class AppProcessor {
+  private ServiceClient serviceClient;
+
+  public AppProcessor(ServiceClient serviceClient) {
+    this.serviceClient = serviceClient;
+  }
 
   @Bean
   public Function<KStream<String, String>, KStream<String, String>> process() {
-    return input -> input.transform(MyTransformer::new);
+
+    return input -> input.transform(() -> new MyTransformer(serviceClient));
   }
 
   @Bean
